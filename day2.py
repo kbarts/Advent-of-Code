@@ -13,4 +13,7 @@ for line in lines:
     aim += val
   elif (direction == 'up'):
     aim -= val
-print("Answer is: " + str(x*z))
+print(z * x)
+
+  
+

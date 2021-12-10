@@ -1,42 +1,53 @@
-def process_vals(vals, i, mc):
-  if len(vals) == 1:
-    return vals[0]
-  vals.sort()     
-  new_vals = []
-  for j, val in enumerate(vals):
-    if (val & (1 << i)):
-      if mc:
-        if (j > len(vals)/2):
-          new_vals = vals[0:j]
-        else:
-          new_vals = vals[j:len(vals)]
-      else:
-        if (j > len(vals)/2):
-          new_vals = vals[j:len(vals)]
-        else:
-          new_vals = vals[0:j] 
-      break
-    elif (j == len(vals) - 1):
-      if mc:
-        new_vals = vals
-  return process_vals(new_vals, i - 1, mc)
+import re
 
-lines = open("input3.txt", "r")
-vals = []
+f = open("input5.txt", "r")
+lines = f.readlines()
+coors = {}
 for line in lines:
-  vals.append(int(line, 2))
-vals.sort()
-oxy = 0
-co2 = 0
-
-for i, val in enumerate(vals):
-  if (val & (1 << 11)):
-    if i > len(vals) / 2:
-      oxy = process_vals(vals[0:i],10,True)
-      co2 = process_vals(vals[i:len(vals)],10,False) 
+  nums = re.split(r'\D+',line)
+  x1 = int(nums[0])
+  y1 = int(nums[1])
+  x2 = int(nums[2])
+  y2 = int(nums[3])
+  if x1 == x2:
+    for y in range (min(y2,y1),max(y2,y1)+1):
+      if (x1,y) in coors:
+        coors[(x1,y)] += 1
+      else:
+        coors[(x1,y)] = 1
+  elif y1 == y2:
+    for x in range (min(x1,x2),max(x1,x2)+1):
+      if (x,y1) in coors:
+        coors[(x,y1)] += 1
+      else:
+        coors[(x,y1)] = 1
+  else:
+    if y1 > y2:
+      dx = x2
+      for y in range(y2, y1+1):
+        if (dx,y) in coors:
+          coors[(dx,y)] += 1
+        else:
+          coors[(dx,y)] = 1
+        if x2 > x1:
+          dx -= 1
+        else:
+          dx += 1
     else:
-      oxy = process_vals(vals[i:len(vals)],10,True) 
-      co2 = process_vals(vals[0:i],10,False)
-    break
-      
-print(oxy * co2)
+      dx = x1
+      for y in range(y1, y2+1):
+        if (dx,y) in coors:
+          coors[(dx,y)] += 1
+        else:
+          coors[(dx,y)] = 1
+        if x1 > x2:
+          dx -= 1
+        else:
+          dx += 1
+
+i=0
+for coor in coors.items():
+  if coor[1] > 1:
+    i += 1;
+
+print(i)
